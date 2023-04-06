@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { addToDb, getShoppingCart } from '../../utilities/fakedb';
+import { addToDb, deleteShoppingCart, getShoppingCart } from '../../utilities/fakedb';
 import Cart from '../Cart/Cart';
 import Product from '../Product/Product';
 import './Shop.css'
+import { Link } from 'react-router-dom';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faArrowAltCircleLeft } from '@fortawesome/free-solid-svg-icons'
 const Shop = () => {
     const [products, setProducts] = useState([]);
     const [cart, setCart] = useState([]);
@@ -11,27 +14,30 @@ const Shop = () => {
             .then(res => res.json())
             .then(data => setProducts(data))
     }, [])
-  useEffect(()=>{
-    const storedData = getShoppingCart();
-    const savedCart = [];
-    //console.log(storedData);
-for (const id in storedData) {
-   const addedProduct = products.find(product => product.id === id);
-   
-   if(addedProduct)
-   {
-    const quantity = storedData[id];
-    addedProduct.quantity = quantity;
-    savedCart.push(addedProduct);
-   }
-}
-setCart(savedCart);
-  },[products])
-  
+    useEffect(() => {
+        const storedData = getShoppingCart();
+        const savedCart = [];
+        //console.log(storedData);
+        for (const id in storedData) {
+            const addedProduct = products.find(product => product.id === id);
+
+            if (addedProduct) {
+                const quantity = storedData[id];
+                addedProduct.quantity = quantity;
+                savedCart.push(addedProduct);
+            }
+        }
+        setCart(savedCart);
+    }, [products])
+
     const btnAddCart = (product) => {
         const newCart = [...cart, product];
         setCart(newCart);
         addToDb(product.id);
+    }
+    const handleClearCart = () => {
+        setCart([]);
+        deleteShoppingCart();
     }
     return (
         <div className='shop-container'>
@@ -45,7 +51,12 @@ setCart(savedCart);
 
             </div>
             <div className="cart-container">
-                <Cart cart={cart}></Cart>
+                <Cart cart={cart}
+                    handleClearCart={handleClearCart}>
+                    <Link className='review-link' to="/order"><button className='dlt review'><span className='clear-span'>Review Order</span>
+                        <FontAwesomeIcon className='font-clear' icon={faArrowAltCircleLeft} />
+                    </button></Link>
+                </Cart>
             </div>
         </div>
     );

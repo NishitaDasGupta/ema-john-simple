@@ -15,7 +15,7 @@ const ReviewItem = ({ product , handleDelete }) => {
                 <h4>Order Quantity: <span className='span-tag'>{quantity}</span>
                 </h4>
             </div>
-            <button className='btn-delete'><FontAwesomeIcon  onClick={() => handleDelete(id)} className='dlt-icon' icon={faTrashAlt} /></button>
+            <button className='btn-delete' onClick={() => handleDelete(id)} ><FontAwesomeIcon  className='dlt-icon' icon={faTrashAlt} /></button>
         </div>
     );
 };
