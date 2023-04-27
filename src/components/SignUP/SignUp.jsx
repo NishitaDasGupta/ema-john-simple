@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Link } from 'react-router-dom';
 import './SignUp.css'
+import { AuthContext } from '../../Provider/AuthProvider';
 const SignUp = () => {
+    const { createUser } = useContext(AuthContext);
     const [error, setError] = useState('');
+    const [showPassW, setShowPassW] = useState(false);
     const handleSignUp = event => {
         event.preventDefault();
 
@@ -12,14 +15,26 @@ const SignUp = () => {
         const confirm = form.confirm.value;
         console.log(email, password, confirm);
 
+        setError('');
         if (password !== confirm) {
             setError("Your Password didn't match.")
             return
         }
-        else  if (password.length < 6) {
+        else if (password.length < 6) {
             setError("Password must be 6 characters or longer.")
             return
         }
+        createUser(email, password)
+            .then(result => {
+                const user = result.user;
+                console.log(user);
+                form.reset();
+            })
+            .catch(error => {
+
+                console.log(error.message);
+            })
+
     }
 
     return (
@@ -33,12 +48,16 @@ const SignUp = () => {
                     </div>
                     <div className="form-control">
                         <label htmlFor="password">Password</label>
-                        <input type="password" name="password" id="password" required />
+                        <input type={showPassW ? 'text' : 'password'} name="password" id="password" required />
                     </div>
                     <div className="form-control">
                         <label htmlFor="confirm">Confirm Password</label>
-                        <input type="password" name="confirm" id="confirm" required />
+                        <input type={showPassW ? 'text' : 'password'} name="confirm" id="confirm" required />
                     </div>
+                    <p onClick={() => setShowPassW(!showPassW)}>{
+                        showPassW ? 
+                        <small>Hide Password</small> : <small>Show Password</small>}
+                        </p>
                     <p className='text-error'>{error}</p>
                     <input className='btn-submit' type="submit" value="LogIn" />
                 </form>
